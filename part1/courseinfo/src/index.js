@@ -2,7 +2,7 @@ import React from 'react'
 import * as ReactDOMClient from 'react-dom/client'
 
 const Header = (props) => {
-  return <h1>{props.course}</h1>
+  return <h1>{props.course.title}</h1>
 }
 
 const Part = (props) => {
@@ -10,7 +10,6 @@ const Part = (props) => {
 }
 
 const Content = (props) => {
-  console.log('parts', props);
   return (
     <div>
       <Part title={props.parts[0].title} exercices={props.parts[0].exercises} />
@@ -45,7 +44,7 @@ const App = () => {
 
   return (
     <div>
-      <Header course={course.title}/>
+      <Header course={course}/>
       <Content parts={course.parts}/>
       <Total parts={course.parts} />
     </div>
