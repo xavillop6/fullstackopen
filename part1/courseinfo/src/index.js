@@ -1,5 +1,4 @@
-import React from 'react'
-import * as ReactDOMClient from 'react-dom/client'
+import ReactDOM from 'react-dom'
 
 const Header = (props) => {
   return <h1>{props.course.title}</h1>
@@ -51,7 +50,7 @@ const App = () => {
   )
 }
 
-const rootElement = document.getElementById("root");
-const root = ReactDOMClient.createRoot(rootElement);
-
-root.render(<App />);
+ReactDOM.render(
+  <App />, 
+  document.getElementById('root')
+)
