@@ -11,6 +11,8 @@ const anecdotes = [
   'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients'
 ]
 
+const Header = ({ text }) => <h1>{text}</h1>
+
 const Anecdote = ({ text, votes }) => {
   return (
     <div>
@@ -20,8 +22,18 @@ const Anecdote = ({ text, votes }) => {
   )
 }
 
-const Button = ({ text, onClick }) =>{
+const Button = ({ text, onClick }) => {
   return <button onClick={onClick}>{ text }</button>
+}
+
+const Winner = ({ votes, anecdotes }) => {
+  const mostVoted = Math.max(...votes)
+  if (mostVoted === 0) {
+    return <p>No results</p>
+  }
+
+  const mostVotedIndex = votes.indexOf(mostVoted);
+  return <Anecdote text={anecdotes[mostVotedIndex]} votes={ mostVoted } />
 }
 
 const App = () => {
@@ -42,9 +54,12 @@ const App = () => {
 
   return (
     <div>
+      <Header text="Anecdote of the day" />
       <Anecdote text={ anecdotes[selected] } votes={ votes[selected] } />
       <Button onClick={ handleVoteAnecdote } text="Vote" />
       <Button onClick={ handleNextAnecdote } text="Next anecdote" />
+      <Header text="Anecdote with most votes" />
+      <Winner votes={ votes } anecdotes={ anecdotes } />
     </div>
   )
 }
