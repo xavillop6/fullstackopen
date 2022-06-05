@@ -1,31 +1,8 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
-
-const Persons = ({ personsToShow }) =>
-  <div>
-    {personsToShow.map(person => <Person key={person.name} person={person} />)}
-  </div>
-
-const Person = ({ person }) => <p>{person.name} {person.number}</p>
-  
-const PersonForm = ({ handleOnSubmit, handleNameChange, newName, handleNumberChange, newNumber }) => 
-  <form onSubmit={ handleOnSubmit }>
-    <div>
-      Name: <input onChange={ handleNameChange } value={ newName } />
-    </div>
-    <div>
-      Number: <input onChange={handleNumberChange} value={ newNumber } />
-    </div>
-    <div>
-      <button type="submit">Add</button>
-    </div>
-  </form>
-
-const Filter = ({ value, onChange }) =>
-  <div>
-    Filter shown with: <input onChange={ onChange } value={ value } />
-  </div>
-
+import { create as createPerson, getAll as getAllPersons } from './services/persons'
+import PersonForm from './components/PersonForm'
+import PersonList from './components/PersonList'
+import Filter from './components/Filter'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -34,11 +11,9 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    getAllPersons()
+      .then(allPersons => {
+        setPersons(allPersons)
       })
   }, [])
   
@@ -64,11 +39,17 @@ const App = () => {
       const personObject = {
         name: newName,
         number: newNumber,
-        id: persons.length + 1
+        //id: persons.length + 1
       };
-      setPersons(persons.concat(personObject));
-      setNewName("");
-      setNewNumber("")
+
+      createPerson(personObject)
+      .then(newPerson => {
+          
+        setPersons((prevPersons) => persons.concat(newPerson));
+        setNewName("");
+        setNewNumber("")
+      })
+      
     }
   }
 
@@ -84,7 +65,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <PersonForm handleOnSubmit={handleOnSubmit} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} newName={ newName } newNumber={ newNumber } />
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} />
+      <PersonList personsToShow={personsToShow} />
     </div>
   )
 }
