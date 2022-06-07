@@ -20,9 +20,19 @@ export const getAll = () => {
 
 export const remove = (person_id) => {
     return axios
-        .delete('http://localhost:3001/persons/'+person_id)
+        .delete(`http://localhost:3001/persons/${person_id}`)
         .then(response => {
             const { data } = response;
             return data;
         })
- }
+}
+ 
+export const update = (person) => {
+    const person_id = person.id;
+    return axios
+        .put(`http://localhost:3001/persons/${person_id}`, person)
+        .then(response => {
+            const { data } = response;
+            return data;
+        })
+}
