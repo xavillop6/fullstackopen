@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { create as createPerson, getAll as getAllPersons } from './services/persons'
+import { create as createPerson, getAll as getAllPersons, remove as removePerson } from './services/persons'
 import PersonForm from './components/PersonForm'
 import PersonList from './components/PersonList'
 import Filter from './components/Filter'
@@ -30,6 +30,15 @@ const App = () => {
     setFilter(newFilter);
   }
 
+  const handleDeletePerson = (person) => {
+    const name = person.name;
+    if (window.confirm(`Delete ${name}?`)) {
+      removePerson(person.id)
+      .then(newPerson => {
+        setPersons((prevPersons) => prevPersons.filter(p => p.id !== person.id));
+      })
+    }
+  }
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
@@ -45,7 +54,7 @@ const App = () => {
       createPerson(personObject)
       .then(newPerson => {
           
-        setPersons((prevPersons) => persons.concat(newPerson));
+        setPersons((prevPersons) => prevPersons.concat(newPerson));
         setNewName("");
         setNewNumber("")
       })
@@ -65,7 +74,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <PersonForm handleOnSubmit={handleOnSubmit} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} newName={ newName } newNumber={ newNumber } />
       <h2>Numbers</h2>
-      <PersonList personsToShow={personsToShow} />
+      <PersonList personsToShow={personsToShow} handleDeletePerson={ handleDeletePerson } />
     </div>
   )
 }

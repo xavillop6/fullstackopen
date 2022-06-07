@@ -17,3 +17,12 @@ export const getAll = () => {
         return data;
     })
 }
+
+export const remove = (person_id) => {
+    return axios
+        .delete('http://localhost:3001/persons/'+person_id)
+        .then(response => {
+            const { data } = response;
+            return data;
+        })
+ }
