@@ -40,7 +40,6 @@ describe('testing GET requests', () => {
 })
 
 describe('testing POST requests', () => {
-  // escribe un test en jest que compruebe la llamada POST de express de un blog nuevo y revisa que el numero total de blogs a incrementado a uno respecto a initialBlogs
   test('a valid blog can be added', async () => {
     const newBlog = {
       title: 'My blog',
@@ -61,6 +60,23 @@ describe('testing POST requests', () => {
     expect(contents).toContain(
       newBlog.title
     )
+  })
+
+  test('new blog without likes has likes = 0', async () => {
+    const newBlog = {
+      title: 'My blog',
+      author: 'Xavier Llop',
+      url: 'https://myblog.com'
+    }
+
+    await api.post('/api/blogs/')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const lastBlogLikes = blogsAtEnd[blogsAtEnd.length - 1].likes
+    expect(0).toEqual(lastBlogLikes)
   })
 })
 
