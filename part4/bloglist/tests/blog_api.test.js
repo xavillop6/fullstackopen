@@ -78,6 +78,37 @@ describe('testing POST requests', () => {
     const lastBlogLikes = blogsAtEnd[blogsAtEnd.length - 1].likes
     expect(0).toEqual(lastBlogLikes)
   })
+
+  test('new blog without title will not be added', async () => {
+    const newBlog = {
+      author: 'Xavier Llop',
+      url: 'https://myblog.com',
+      likes: 7
+    }
+
+    await api.post('/api/blogs/')
+      .send(newBlog)
+      .expect(400)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+
+  test('new blog without url will not be added', async () => {
+    const newBlog = {
+      title: 'My blog',
+      author: 'Xavier Llop',
+      likes: 7
+    }
+
+    await api.post('/api/blogs/')
+      .send(newBlog)
+      .expect(400)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
 })
 
 afterAll(() => {
