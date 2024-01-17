@@ -1,25 +1,10 @@
-require('./app')
-const express = require('express')
-const app = express()
-const cors = require('cors')
-const logger = require('./utils/logger')
+const app = require('./app')
+const http = require('http')
 const config = require('./utils/config')
+const logger = require('./utils/logger')
 
-const errorHandler = require('./middleware/errorHandler')
-const unknownEndpoint = require('./middleware/unknownEndpoint')
+const server = http.createServer(app)
 
-require('dotenv').config()
-
-app.use(cors())
-app.use(express.static('build'))
-app.use(express.json())
-
-const blogsRouter = require('./controllers/blogs')
-app.use('/api/blogs', blogsRouter)
-
-app.use(unknownEndpoint)
-app.use(errorHandler)
-
-app.listen(config.PORT, () => {
+server.listen(config.PORT, () => {
   logger.info(`Server running on port ${config.PORT}`)
 })
