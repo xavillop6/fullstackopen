@@ -3,20 +3,35 @@ const usersRouter = require('express').Router()
 const User = require('../models/User')
 
 usersRouter.post('/', async (request, response) => {
-  const body = request.body
+  try {
+    const { username, name, password } = request.body
 
-  const saltRounds = 10
-  const passwordHash = await bcrypt.hash(body.password, saltRounds)
+    if (username === undefined || password === undefined) {
+      return response.status(400).json({ error: 'username and password are required' })
+    }
 
-  const user = new User({
-    username: body.username,
-    name: body.name,
-    passwordHash
-  })
+    if (username.length < 3 || password.length < 3) {
+      return response.status(400).json({ error: 'username and password must be at least 3 characters' })
+    }
 
-  const savedUser = await user.save()
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(password, saltRounds)
 
-  response.status(201).json(savedUser)
+    const user = new User({
+      username,
+      name,
+      passwordHash
+    })
+
+    const savedUser = await user.save()
+
+    response.status(201).json(savedUser)
+  } catch (exception) {
+    if (exception.message.includes('`username` to be unique')) {
+      return response.status(400).json({ error: 'username must be unique' })
+    }
+    response.status(500).json({ error: 'something went wrong...' })
+  }
 })
 
 usersRouter.get('/', async (request, response) => {
