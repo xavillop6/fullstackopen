@@ -9,12 +9,29 @@ const User = require('../models/User')
 const Blog = require('../models/Blog')
 
 beforeEach(async () => {
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('password', 10)
+  const user = new User({ username: 'root', passwordHash })
+  await user.save()
+})
+
+beforeEach(async () => {
   await Blog.deleteMany({})
+  const users = await User.find({})
+  const user = users[0]
 
   const blogObjects = helper.initialBlogs
-    .map(blog => new Blog(blog))
-  const promiseArray = blogObjects.map(blog => blog.save())
+    .map(blog => {
+      blog.user = user._id
+      return new Blog(blog)
+    })
+  const promiseArray = blogObjects.map(blog => {
+    user.blogs = user.blogs.concat(blog._id)
+    return blog.save()
+  })
   await Promise.all(promiseArray)
+  await user.save()
 })
 
 describe('testing GET requests', () => {
@@ -42,7 +59,7 @@ describe('testing GET requests', () => {
 })
 
 describe('testing POST requests', () => {
-  test('a valid blog can be added', async () => {
+  test('a valid blog can be added by authorized user', async () => {
     const newBlog = {
       title: 'My blog',
       author: 'Xavier Llop',
@@ -50,8 +67,18 @@ describe('testing POST requests', () => {
       likes: 7
     }
 
+    const user = {
+      username: 'root',
+      password: 'password'
+    }
+
+    const loginUser = await api
+      .post('/api/login')
+      .send(user)
+
     await api.post('/api/blogs/')
       .send(newBlog)
+      .set('Authorization', `Bearer ${loginUser.body.token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -71,8 +98,18 @@ describe('testing POST requests', () => {
       url: 'https://myblog.com'
     }
 
+    const user = {
+      username: 'root',
+      password: 'password'
+    }
+
+    const loginUser = await api
+      .post('/api/login')
+      .send(user)
+
     await api.post('/api/blogs/')
       .send(newBlog)
+      .set('Authorization', `Bearer ${loginUser.body.token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -88,7 +125,17 @@ describe('testing POST requests', () => {
       likes: 7
     }
 
+    const user = {
+      username: 'root',
+      password: 'password'
+    }
+
+    const loginUser = await api
+      .post('/api/login')
+      .send(user)
+
     await api.post('/api/blogs/')
+      .set('Authorization', `Bearer ${loginUser.body.token}`)
       .send(newBlog)
       .expect(400)
 
@@ -104,7 +151,17 @@ describe('testing POST requests', () => {
       likes: 7
     }
 
+    const user = {
+      username: 'root',
+      password: 'password'
+    }
+
+    const loginUser = await api
+      .post('/api/login')
+      .send(user)
+
     await api.post('/api/blogs/')
+      .set('Authorization', `Bearer ${loginUser.body.token}`)
       .send(newBlog)
       .expect(400)
 
@@ -118,8 +175,18 @@ describe('deletion of a blog', () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
 
+    const user = {
+      username: 'root',
+      password: 'password'
+    }
+
+    const loginUser = await api
+      .post('/api/login')
+      .send(user)
+
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${loginUser.body.token}`)
       .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
@@ -131,6 +198,15 @@ describe('deletion of a blog', () => {
     const blogsAtEndIds = blogsAtEnd.map(blog => blog.id)
 
     expect(blogsAtEndIds).not.toContain(blogToDelete.id)
+  })
+
+  test('return 401 if token is missing', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(401)
   })
 })
 
@@ -156,7 +232,7 @@ describe('when there is initially one user in db', () => {
   beforeEach(async () => {
     await User.deleteMany({})
 
-    const passwordHash = await bcrypt.hash('sekret', 10)
+    const passwordHash = await bcrypt.hash('password', 10)
     const user = new User({ username: 'root', passwordHash })
 
     await user.save()
@@ -191,7 +267,6 @@ describe('when there is initially one user in db', () => {
       .expect(400)
       .expect('Content-Type', /application\/json/)
 
-    console.log(result)
     expect(result.body.error).toContain('username must be unique')
 
     const usersAtEnd = await helper.usersInDb()
