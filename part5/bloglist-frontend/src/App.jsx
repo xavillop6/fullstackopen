@@ -3,13 +3,14 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import AddBlogForm from './components/AddBlogForm'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -44,10 +45,12 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-    } catch (exception) {
-      setErrorMessage('wrong credentials')
+      setNotification(null)
+    } catch (error) {
+      const errorMessage = error.response.data.error
+      setNotification({ message: errorMessage, type: 'error' })
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification(null)
       }, 5000)
     }
   }
@@ -56,6 +59,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification notification={notification} />
         <form onSubmit={handleLogin}>
           <div>
             username
@@ -81,16 +85,30 @@ const App = () => {
     )
   }
 
-  const createBlog = (newBlog) => {
-    blogService.create(newBlog).then(returnedBlog => {
+  const createBlog = async (newBlog) => {
+    try {
+      const returnedBlog = await blogService.create(newBlog)
       const newBlogs = [...blogs, returnedBlog]
       setBlogs(newBlogs)
-    })
+      setNotification({
+        message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        type: 'success'
+      })
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    } catch (error) {
+      setNotification({ message: 'error when adding a new blog', type: 'error' })
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
   }
 
   return (
     <div>
       <h2>blogs</h2>
+      <Notification notification={notification} />
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
       <AddBlogForm createBlog={createBlog} />
       {blogs.map(blog =>
