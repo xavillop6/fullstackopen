@@ -15,9 +15,10 @@ const App = () => {
   const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    blogService.getAll().then(blogs => {
+      blogs.sort((a, b) => b.likes - a.likes)
       setBlogs(blogs)
-    )
+    })
   }, [])
 
   useEffect(() => {
@@ -121,6 +122,19 @@ const App = () => {
     }
   }
 
+  const removeBlog = async (id) => {
+    try {
+      await blogService.remove(id)
+      const newBlogs = blogs.filter(blog => blog.id !== id)
+      setBlogs(newBlogs)
+    } catch (error) {
+      setNotification({ message: 'error when removing a blog', type: 'error' })
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
+  }
+
   return (
     <div>
       <h2>blogs</h2>
@@ -130,7 +144,7 @@ const App = () => {
         <AddBlogForm createBlog={createBlog} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} user={user} removeBlog={removeBlog} />
       )}
     </div>
   )

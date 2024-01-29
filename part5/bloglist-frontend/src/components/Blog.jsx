@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, updateBlog }) => {
+const Blog = ({ blog, updateBlog, removeBlog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -19,14 +19,24 @@ const Blog = ({ blog, updateBlog }) => {
     await updateBlog(blog.id, likedBlog)
   }
 
+  const handleRemove = async () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      await removeBlog(blog.id)
+    }
+  }
+
+  const showRemove = blog.user.username === user.username
   const showWhenVisible = { display: showDetails ? '' : 'none' }
 
   return (
     <div style={blogStyle}>
       {blog.title} {blog.author} <button onClick={toggleShowDetails}>{showDetails ? 'hide' : 'view'}</button>
-      <div style={showWhenVisible}>{showDetails ? blog.url : null}</div>
-      <div style={showWhenVisible}>likes: {blog.likes} <button onClick={handleLike}>likes</button></div>
-      <div style={showWhenVisible}>{blog.user !== null && blog.user.name}</div>
+      <div style={showWhenVisible}>
+        <div>{showDetails ? blog.url : null}</div>
+        <div>likes: {blog.likes} <button onClick={handleLike}>likes</button></div>
+        <div>{blog.user !== null && blog.user.name}</div>
+        {showRemove && <button onClick={handleRemove}>remove</button>}
+      </div>
     </div>
   )
 }
