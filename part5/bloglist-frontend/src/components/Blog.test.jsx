@@ -1,6 +1,6 @@
 import React from 'react'
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import Blog from './Blog'
 
 describe('Blog component tests', () => {
@@ -52,5 +52,19 @@ describe('Blog component tests', () => {
     expect(whenVisibleDiv).toHaveTextContent(
       `likes: ${initialBlog.likes}`
     )
+  })
+
+  test('clicking like twice calls event handler twice', () => {
+    const mockHandler = jest.fn()
+
+    const component = render(
+      <Blog blog={initialBlog} user={initialBlog.user} updateBlog={mockHandler} />
+    )
+
+    const button = component.getByText('likes')
+    fireEvent.click(button)
+    fireEvent.click(button)
+
+    expect(mockHandler.mock.calls).toHaveLength(2)
   })
 })
