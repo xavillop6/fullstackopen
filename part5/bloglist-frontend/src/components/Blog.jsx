@@ -29,15 +29,15 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
   const showWhenVisible = { display: showDetails ? '' : 'none' }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       <div className='whenHidden'>
-        {blog.title} {blog.author} <button onClick={toggleShowDetails}>{showDetails ? 'hide' : 'view'}</button>
+        {blog.title} {blog.author} <button className='viewButton' onClick={toggleShowDetails}>{showDetails ? 'hide' : 'view'}</button>
       </div>
       <div style={showWhenVisible} className='whenVisible'>
         <div>{blog.url}</div>
-        <div>likes: {blog.likes} <button onClick={handleLike}>likes</button></div>
+        <div>likes: {blog.likes} <button className='likeButton' onClick={handleLike}>likes</button></div>
         <div>{blog.user !== null && blog.user.name}</div>
-        {showRemove && <button onClick={handleRemove}>remove</button>}
+        {showRemove && <button className='removeButton' onClick={handleRemove}>remove</button>}
       </div>
     </div>
   )
