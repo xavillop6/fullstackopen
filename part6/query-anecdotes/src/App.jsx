@@ -3,15 +3,23 @@ import Notification from './components/Notification'
 
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { getAnecdotes, voteAnecdote } from './requests'
+import { useNotificationDispatch } from './NotificationContext'
 
 const App = () => {
 
   const queryClient = useQueryClient() 
+  const notificationDispatch = useNotificationDispatch()
   const voteAnecdoteMutation = useMutation(voteAnecdote, {
     onSuccess: (updatedAnecdote) => {
       const anecdotes = queryClient.getQueryData('anecdotes')
       const newAnecdotes = anecdotes.map(anecdote => anecdote.id === updatedAnecdote.id ? updatedAnecdote : anecdote)
       queryClient.setQueryData('anecdotes', newAnecdotes)
+
+      notificationDispatch({ type: 'SET', payload: `you voted for ${updatedAnecdote.content}` })
+      
+      setTimeout(() => {
+        notificationDispatch({ type: 'CLEAR' })
+      }, 5000)
     }
   })
   const handleVote = (anecdote) => {
