@@ -2,9 +2,9 @@ import { useState } from "react"
 import { useField } from "../hooks"
 
 const CreateNew = (props) => {
-    const content = useField('text')
-    const author = useField('text')
-    const url = useField('text')
+    const {reset: resetContent, ...content} = useField('text')
+    const {reset: resetAuthor, ...author} = useField('text')
+    const {reset: resetUrl, ...url} = useField('text')
   
   
     const handleSubmit = (e) => {
@@ -15,6 +15,12 @@ const CreateNew = (props) => {
         info: url.value,
         votes: 0
       })
+    }
+
+    const handleReset = () => {
+        resetContent()
+        resetAuthor()
+        resetUrl()
     }
   
     return (
@@ -33,7 +39,8 @@ const CreateNew = (props) => {
             url for more info
             <input name="url" {...url} />
           </div>
-          <button>create</button>
+                <button>create</button>
+                <button type="button" onClick={handleReset}>reset</button>
         </form>
       </div>
     )
