@@ -7,10 +7,6 @@
     {
       "id": 2,
       "content": "best feature ever <3"
-    },
-    {
-      "content": "eiiiiiiiiiiii nota",
-      "id": 3
     }
   ],
   "persons": [
@@ -23,26 +19,6 @@
       "id": 2,
       "name": "hellas",
       "number": "012-123123"
-    },
-    {
-      "name": "xavillop",
-      "number": "040-5483923",
-      "id": 3
-    },
-    {
-      "name": "xavillop7",
-      "number": "012-123123",
-      "id": 4
-    },
-    {
-      "name": "xavillop7",
-      "number": "040-5483923",
-      "id": 5
-    },
-    {
-      "name": "abcd",
-      "number": "040-5483923",
-      "id": 6
     }
   ]
 }
