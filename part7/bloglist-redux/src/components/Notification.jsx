@@ -1,7 +1,9 @@
-import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
 
-const Notification = ({ notification }) => {
-  if (notification === null) {
+const Notification = () => {
+  const notification = useSelector((state) => state.notification);
+  console.log('NOT', notification);
+  if (!notification) {
     return null;
   }
 

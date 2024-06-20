@@ -1,3 +1,4 @@
+import { useDispatch } from "react-redux";
 import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
@@ -5,13 +6,18 @@ import loginService from "./services/login";
 import AddBlogForm from "./components/AddBlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
+import {
+  clearNotification,
+  setNotification,
+} from "./reducers/notificationReducer";
 
 const App = () => {
+  const dispatch = useDispatch();
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [notification, setNotification] = useState(null);
+  //const [notification, setNotification] = useState(null);
   const blogFormRef = useRef();
 
   useEffect(() => {
@@ -47,13 +53,10 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
-      setNotification(null);
+      dispatch(clearNotification());
     } catch (error) {
       const errorMessage = error.response.data.error;
-      setNotification({ message: errorMessage, type: "error" });
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
+      dispatch(setNotification({ message: errorMessage, type: "error" }, 5));
     }
   };
 
@@ -61,7 +64,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification notification={notification} />
+        <Notification />
         <form onSubmit={handleLogin}>
           <div>
             username
@@ -97,21 +100,14 @@ const App = () => {
       const returnedBlog = await blogService.create(newBlog);
       const newBlogs = [...blogs, returnedBlog];
       setBlogs(newBlogs);
-      setNotification({
-        message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
-        type: "success",
-      });
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
+
+      
+      dispatch(setNotification({ message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`, type: "success" }, 5));
     } catch (error) {
-      setNotification({
+      dispatch(setNotification({
         message: "error when adding a new blog",
         type: "error",
-      });
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
+      }, 5));
     }
   };
 
@@ -121,10 +117,8 @@ const App = () => {
       const newBlogs = blogs.map((b) => (b.id !== blog.id ? b : updatedBlog));
       setBlogs(newBlogs);
     } catch (error) {
-      setNotification({ message: "error when updating a blog", type: "error" });
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
+      dispatch(setNotification({ message: "error when updating a blog", type: "error" }, 5));
+      
     }
   };
 
@@ -134,17 +128,14 @@ const App = () => {
       const newBlogs = blogs.filter((blog) => blog.id !== id);
       setBlogs(newBlogs);
     } catch (error) {
-      setNotification({ message: "error when removing a blog", type: "error" });
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
+      dispatch(setNotification({ message: "error when removing a blog", type: "error" }, 5));
     }
   };
-
+  
   return (
     <div id="content">
       <h2>blogs</h2>
-      <Notification notification={notification} />
+      <Notification />
       <p>
         {user.name} logged in <button onClick={handleLogout}>logout</button>
       </p>
