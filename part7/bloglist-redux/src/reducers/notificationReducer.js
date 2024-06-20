@@ -10,6 +10,10 @@ const notificationSlice = createSlice({
     clearNotification(state) {
       return null;
     },
+    voteBlog: (state, action) => {
+      const id = action.payload.id;
+      return state.map((blog) => (blog.id !== id ? blog : action.payload));
+    },
   },
 });
 

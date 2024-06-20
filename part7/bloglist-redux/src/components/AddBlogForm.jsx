@@ -1,20 +1,49 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import Togglable from "./Togglable";
+import { useDispatch } from "react-redux";
+import { setNotification } from "../reducers/notificationReducer";
+import { createBlog } from "../reducers/blogReducer";
 
-const AddBlogForm = ({ createBlog }) => {
+const AddBlogForm = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const dispatch = useDispatch();
 
-  const handleAddBlog = async (event) => {
+  const blogFormRef = useRef();
+
+  const handleAddBlog = (event) => {
     event.preventDefault();
-    const blog = { title, author, url };
-    await createBlog(blog);
-    setTitle("");
-    setAuthor("");
-    setUrl("");
+    try {
+      const newBlog = { title, author, url };
+      blogFormRef.current.toggleVisibility();
+      dispatch(createBlog(newBlog));
+
+      dispatch(
+        setNotification(
+          {
+            message: `a new blog ${title} by ${author} added`,
+            type: "success",
+          },
+          5,
+        ),
+      );
+    } catch (error) {
+      console.log(error);
+      dispatch(
+        setNotification(
+          {
+            message: "error when adding a new blog",
+            type: "error",
+          },
+          5,
+        ),
+      );
+    }
   };
+
   return (
-    <div>
+    <Togglable buttonLabel="new blog" ref={blogFormRef}>
       <h2>create new</h2>
       <form onSubmit={handleAddBlog}>
         <div>
@@ -48,7 +77,7 @@ const AddBlogForm = ({ createBlog }) => {
           create
         </button>
       </form>
-    </div>
+    </Togglable>
   );
 };
 

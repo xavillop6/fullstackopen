@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addLike, deleteBlog } from "../reducers/blogReducer";
+import { setNotification } from "../reducers/notificationReducer";
 
-const Blog = ({ blog, updateBlog, removeBlog, user }) => {
+const Blog = ({ blog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -9,19 +12,38 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
     marginBottom: 5,
   };
 
+  const dispatch = useDispatch();
+
   const [showDetails, setShowDetails] = useState(false);
   const toggleShowDetails = () => {
     setShowDetails(!showDetails);
   };
 
-  const handleLike = async () => {
-    const likedBlog = { ...blog, likes: blog.likes + 1 };
-    await updateBlog(blog.id, likedBlog);
+  const handleLike = () => {
+    try {
+      dispatch(addLike(blog));
+    } catch (error) {
+      dispatch(
+        setNotification(
+          { message: "error when updating a blog", type: "error" },
+          5,
+        ),
+      );
+    }
   };
 
   const handleRemove = async () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await removeBlog(blog.id);
+      try {
+        dispatch(deleteBlog(blog));
+      } catch (error) {
+        dispatch(
+          setNotification(
+            { message: "error when removing a blog", type: "error" },
+            5,
+          ),
+        );
+      }
     }
   };
 
