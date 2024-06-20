@@ -13,7 +13,8 @@ const blogSlice = createSlice({
     },
     updateBlog(state, action) {
       const id = action.payload.id;
-      return state.map((blog) => (blog.id !== id ? blog : action.payload));
+      const newState = state.map((blog) => (blog.id !== id ? blog : action.payload));
+      return newState.sort((a, b) => b.likes - a.likes);
     },
     removeBlog(state, action) {
       const id = action.payload.id;
