@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { setNotification } from "../reducers/notificationReducer";
 import { addLike } from "../reducers/blogReducer";
 import { Button, Card } from "react-bootstrap";
+import CommentCard from "./CommentCard";
+import AddComment from "./AddComment";
 
 const BlogDetail = () => {
   const dispatch = useDispatch()
@@ -12,6 +14,8 @@ const BlogDetail = () => {
   if (!blog) {
     return null
   }
+
+  const comments = blog.comments ? blog.comments : []
 
   const handleLike = () => {
     try {
@@ -27,16 +31,23 @@ const BlogDetail = () => {
   };
 
   return (
+    <>
     <Card>
       <Card.Header as="h4">{blog.title} <Button id="likeButton" className="float-end" onClick={handleLike}>Like</Button></Card.Header>
       <Card.Body>
         <Card.Text>{blog.likes} likes</Card.Text>
-        
         <Card.Link href={blog.url}>{blog.url}</Card.Link>
       </Card.Body>
       <Card.Footer>{blog.author}</Card.Footer>
-    </Card>  
-  );
+      </Card>  
+      
+      <div className="mt-4">
+        <h3>Comments</h3>
+        <AddComment blog={blog} />
+        {comments && comments.map((comment, index) => <CommentCard key={index} comment={comment} />)}
+      </div>
+    </>
+  )
 }
 
 export default BlogDetail
