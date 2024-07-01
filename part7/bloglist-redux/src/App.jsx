@@ -1,25 +1,30 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import Blog from "./components/Blog";
-import AddBlogForm from "./components/AddBlogForm";
 import Notification from "./components/Notification";
 import { initializeBlogs } from "./reducers/blogReducer";
 import { initalizeUser, loginUser, logoutUser } from "./reducers/authReducer";
+import { initializeUsers } from "./reducers/userReducer";
+
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from 'react-router-dom'
+import UserList from "./components/UserList";
+import { BlogList } from "./components/BlogList";
+import { UserDetail } from "./components/UserDetail";
 
 const App = () => {
   const dispatch = useDispatch();
-  const blogs = useSelector((state) => state.blogs);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const user = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(initializeBlogs());
-  }, []);
-
-  useEffect(() => {
     dispatch(initalizeUser());
-  }, []);
+    dispatch(initializeUsers());
+  }, [dispatch]);
+
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -70,15 +75,22 @@ const App = () => {
 
   return (
     <div id="content">
-      <h2>blogs</h2>
-      <Notification />
-      <p>
-        {user.name} logged in <button onClick={handleLogout}>logout</button>
-      </p>
-
-      <AddBlogForm />
-      {blogs &&
-        blogs.map((blog) => <Blog key={blog.id} blog={blog} user={user} />)}
+      <Router>
+        <div>
+          <Link to="/">blogs</Link>
+          <Link to="/users">users</Link>
+        </div>
+        <h2>blogs</h2>
+          <Notification />
+          <p>
+            {user.name} logged in <button onClick={handleLogout}>logout</button>
+          </p>
+        <Routes>
+          <Route path="/users" element={<UserList />} />
+          <Route path="/" element={<BlogList />} />
+          <Route path="/users/:id" element={<UserDetail />} />
+        </Routes>
+      </Router>
     </div>
   );
 };

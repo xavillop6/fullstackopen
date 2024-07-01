@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addLike, deleteBlog } from "../reducers/blogReducer";
 import { setNotification } from "../reducers/notificationReducer";
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -13,6 +13,7 @@ const Blog = ({ blog, user }) => {
   };
 
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth);
 
   const [showDetails, setShowDetails] = useState(false);
   const toggleShowDetails = () => {
