@@ -1,60 +1,37 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
 import AddBlogForm from "./components/AddBlogForm";
 import Notification from "./components/Notification";
-import Togglable from "./components/Togglable";
 import { initializeBlogs } from "./reducers/blogReducer";
-import {
-  clearNotification,
-  setNotification,
-} from "./reducers/notificationReducer";
+import { initalizeUser, loginUser, logoutUser } from "./reducers/authReducer";
 
 const App = () => {
   const dispatch = useDispatch();
   const blogs = useSelector((state) => state.blogs);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-  //const [notification, setNotification] = useState(null);
+  const user = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(initializeBlogs());
   }, []);
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
+    dispatch(initalizeUser());
   }, []);
 
   const handleLogout = () => {
-    window.localStorage.removeItem("loggedBlogAppUser");
-    setUser(null);
+    dispatch(logoutUser());
   };
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
-      blogService.setToken(user.token);
-      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
-      setUser(user);
-      setUsername("");
-      setPassword("");
-      dispatch(clearNotification());
-    } catch (error) {
-      const errorMessage = error.response.data.error;
-      dispatch(setNotification({ message: errorMessage, type: "error" }, 5));
-    }
+
+    dispatch(loginUser({ username, password }));
+
+    setUsername("");
+    setPassword("");
   };
 
   if (user === null) {
