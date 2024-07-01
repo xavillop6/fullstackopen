@@ -7,11 +7,14 @@ import { initializeUsers } from "./reducers/userReducer";
 
 import {
   BrowserRouter as Router,
-  Routes, Route, Link
+  Routes, Route
 } from 'react-router-dom'
 import UserList from "./components/UserList";
-import { BlogList } from "./components/BlogList";
 import { UserDetail } from "./components/UserDetail";
+import BlogList from "./components/BlogList";
+import BlogDetail from "./components/BlogDetail";
+import Menu from "./components/Menu";
+import { Button, Container, Form } from "react-bootstrap";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -26,10 +29,6 @@ const App = () => {
   }, [dispatch]);
 
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
-  };
-
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -41,55 +40,50 @@ const App = () => {
 
   if (user === null) {
     return (
-      <div>
+      <Container>
         <h2>Log in to application</h2>
         <Notification />
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
-              type="text"
+        <Form onSubmit={handleLogin}>
+          <Form.Group className="mb-3">
+            <Form.Label>Username</Form.Label>
+            <Form.Control type="text"
               id="username"
               value={username}
               name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password
-            <input
+              onChange={({ target }) => setUsername(target.value)} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
               type="password"
               id="password"
               value={password}
               name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit" id="login-button">
-            login
-          </button>
-        </form>
-      </div>
+              onChange={({ target }) => setPassword(target.value)} />
+          </Form.Group>
+          
+          <Button type="submit" id="login-button">
+            Login
+          </Button>
+        </Form>
+      </Container>
     );
   }
 
   return (
-    <div id="content">
+    <div id="container">
       <Router>
-        <div>
-          <Link to="/">blogs</Link>
-          <Link to="/users">users</Link>
-        </div>
-        <h2>blogs</h2>
-          <Notification />
-          <p>
-            {user.name} logged in <button onClick={handleLogout}>logout</button>
-          </p>
-        <Routes>
-          <Route path="/users" element={<UserList />} />
-          <Route path="/" element={<BlogList />} />
-          <Route path="/users/:id" element={<UserDetail />} />
-        </Routes>
+        <Menu />
+        <Container className="mt-4 pb-4">
+            <Notification />
+            <Routes>
+              <Route path="/users" element={<UserList />} />
+              <Route path="/" element={<BlogList />} />
+              <Route path="/users/:id" element={<UserDetail />} />
+              <Route path="/blogs/:id" element={<BlogDetail />} />
+          </Routes>
+        </Container>
       </Router>
     </div>
   );

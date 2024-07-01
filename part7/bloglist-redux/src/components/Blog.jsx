@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addLike, deleteBlog } from "../reducers/blogReducer";
 import { setNotification } from "../reducers/notificationReducer";
+import { Link } from "react-router-dom";
+import Card from 'react-bootstrap/Card';
+import { Col, ListGroup } from "react-bootstrap";
+
 
 const Blog = ({ blog }) => {
   const blogStyle = {
@@ -48,33 +52,20 @@ const Blog = ({ blog }) => {
     }
   };
 
-  const showRemove = blog.user.username === user.username;
-  const showWhenVisible = { display: showDetails ? "" : "none" };
-
   return (
-    <div style={blogStyle} className="blog">
-      <div className="whenHidden">
-        {blog.title} {blog.author}{" "}
-        <button className="viewButton" onClick={toggleShowDetails}>
-          {showDetails ? "hide" : "view"}
-        </button>
-      </div>
-      <div style={showWhenVisible} className="whenVisible">
-        <div>{blog.url}</div>
-        <div>
-          likes: {blog.likes}{" "}
-          <button className="likeButton" onClick={handleLike}>
-            likes
-          </button>
-        </div>
-        <div>{blog.user !== null && blog.user.name}</div>
-        {showRemove && (
-          <button className="removeButton" onClick={handleRemove}>
-            remove
-          </button>
-        )}
-      </div>
-    </div>
+    <Col key={blog.id}>
+      <Card className="blog">
+        <Card.Header has="h4">{blog.title}</Card.Header>
+        <ListGroup className="list-group-flush">
+          <ListGroup.Item>Author: {blog.author}</ListGroup.Item>
+        </ListGroup>
+        <Card.Body>
+          <Card.Link>
+            <Link to={`/blogs/${blog.id}`}>View more</Link>
+          </Card.Link>
+        </Card.Body>
+      </Card>
+    </Col>
   );
 };
 

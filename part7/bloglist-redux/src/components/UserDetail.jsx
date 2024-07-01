@@ -1,5 +1,7 @@
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import Blog from "./Blog";
+import { Row } from "react-bootstrap";
 
 export const UserDetail = () => {
   const users = useSelector(state => state.user)
@@ -10,16 +12,16 @@ export const UserDetail = () => {
   if (!user) {
     return null
   }
+
+  const blogs = user.blogs;
   
   return (
     <div>
       <h2>{user.name}</h2>
-      <div>added blogs</div>
-      <ul>
-        {user.blogs.map(blog => (
-          <li key={blog.id}>{blog.title}</li>
-        ))}
-      </ul>
+      <Row xs={1} md={2} className="g-4">
+      {blogs &&
+          blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
+        </Row>
     </div>
   );
 }

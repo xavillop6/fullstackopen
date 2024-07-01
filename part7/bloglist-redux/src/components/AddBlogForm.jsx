@@ -3,6 +3,7 @@ import Togglable from "./Togglable";
 import { useDispatch } from "react-redux";
 import { setNotification } from "../reducers/notificationReducer";
 import { createBlog } from "../reducers/blogReducer";
+import { Button, Card, Form } from "react-bootstrap";
 
 const AddBlogForm = () => {
   const [title, setTitle] = useState("");
@@ -44,39 +45,40 @@ const AddBlogForm = () => {
 
   return (
     <Togglable buttonLabel="new blog" ref={blogFormRef}>
-      <h2>create new</h2>
-      <form onSubmit={handleAddBlog}>
-        <div>
-          title:
-          <input
-            id="title"
+      <Card>
+        <Card.Body>
+        <Card.Title>Add a new blog</Card.Title>
+        <Form onSubmit={handleAddBlog}>
+      <Form.Group className="mb-3">
+        <Form.Label>Title</Form.Label>
+        <Form.Control type="password" placeholder="Password" id="title"
             name="title"
             value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          author:
-          <input
-            id="author"
+            onChange={({ target }) => setTitle(target.value)} />
+        </Form.Group>
+        
+        <Form.Group className="mb-3">
+        <Form.Label>Author</Form.Label>
+        <Form.Control type="password" placeholder="Password" id="author"
             name="author"
             value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          url:
-          <input
-            id="url"
+            onChange={({ target }) => setAuthor(target.value)} />
+        </Form.Group>
+        
+        <Form.Group className="mb-3">
+        <Form.Label>Url</Form.Label>
+        <Form.Control type="password" placeholder="Password" id="url"
             name="url"
             value={url}
-            onChange={({ target }) => setUrl(target.value)}
-          />
-        </div>
-        <button id="create" type="submit">
-          create
-        </button>
-      </form>
+            onChange={({ target }) => setUrl(target.value)} />
+      </Form.Group>
+      
+        <Button id="create" type="submit">
+          Create
+        </Button>
+      </Form>
+        </Card.Body>
+      </Card>      
     </Togglable>
   );
 };
