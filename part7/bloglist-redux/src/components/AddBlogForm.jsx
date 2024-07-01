@@ -51,7 +51,7 @@ const AddBlogForm = () => {
         <Form onSubmit={handleAddBlog}>
       <Form.Group className="mb-3">
         <Form.Label>Title</Form.Label>
-        <Form.Control type="password" placeholder="Password" id="title"
+        <Form.Control type="text" placeholder="Title" id="title"
             name="title"
             value={title}
             onChange={({ target }) => setTitle(target.value)} />
@@ -59,7 +59,7 @@ const AddBlogForm = () => {
         
         <Form.Group className="mb-3">
         <Form.Label>Author</Form.Label>
-        <Form.Control type="password" placeholder="Password" id="author"
+        <Form.Control type="text" placeholder="Author" id="author"
             name="author"
             value={author}
             onChange={({ target }) => setAuthor(target.value)} />
@@ -67,7 +67,7 @@ const AddBlogForm = () => {
         
         <Form.Group className="mb-3">
         <Form.Label>Url</Form.Label>
-        <Form.Control type="password" placeholder="Password" id="url"
+        <Form.Control type="text" placeholder="Url" id="url"
             name="url"
             value={url}
             onChange={({ target }) => setUrl(target.value)} />

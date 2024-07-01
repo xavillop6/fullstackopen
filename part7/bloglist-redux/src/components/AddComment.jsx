@@ -2,14 +2,40 @@ import { useState } from "react"
 import { Button, Form } from "react-bootstrap"
 import { useDispatch } from "react-redux"
 import { commentBlog } from "../reducers/blogReducer"
+import { setNotification } from "../reducers/notificationReducer"
 
 const AddComment = ({ blog }) => {
   const [comment, setComment] = useState('')
   const dispatch = useDispatch()
   const handleAddComment = async (event) => {
     event.preventDefault()
-    dispatch(commentBlog({ blog, comment}))
-    setComment('')
+    
+
+    try {
+      dispatch(commentBlog({ blog, comment}))
+      setComment('')
+
+      dispatch(
+        setNotification(
+          {
+            message: `A new comment added`,
+            type: "success",
+          },
+          5,
+        ),
+      );
+    } catch (error) {
+      console.log(error);
+      dispatch(
+        setNotification(
+          {
+            message: "error when adding a comment",
+            type: "error",
+          },
+          5,
+        ),
+      );
+    }
   }
   return (
     <Form onSubmit={handleAddComment} className="mb-4">
